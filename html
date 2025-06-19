@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZaloPay Voucher Code Generator</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Your existing CSS remains unchanged */
+        :root {
+            --primary-color: #0068ff;
+            --primary-light: #e6f0ff;
+            --secondary-color: #f0f8ff;
+            --border-color: #e0e0e0;
+            --text-color: #2d3748;
+            --text-light: #718096;
+            --success-color: #38a169;
+            --warning-color: #dd6b20;
+            --error-color: #e53e3e;
+            --bg-color: #f7fafc;
+            --card-bg: #ffffff;
+        }
+        
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+        }
+        
+        .container {
+            background-color: var(--card-bg);
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+        }
+        
+        .form-group {
+            margin-bottom: 24px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        
+        input, select {
+            padding: 12px 14px;
+            width: 100%;
+            box-sizing: border-box;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 15px;
+            transition: all 0.2s;
+            background-color: var(--card-bg);
+        }
+        
+        input:focus, select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+            box-shadow: 0 0 0 3px var(--primary-light);
+        }
+        
+        .time-inputs {
+            display: flex;
+            gap: 12px;
+        }
+        
+        .time-inputs input {
+            flex: 1;
+        }
+        
+        button {
+            background: var(--primary-color);
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.2s;
+            margin-top: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+        
+        button:hover {
+            background: #0052cc;
+            transform: translateY(-1px);
+        }
+        
+        button:active {
+            transform: translateY(0);
+        }
+        
+        .btn-secondary {
+            background: var(--secondary-color);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+        }
+        
+        .btn-secondary:hover {
+            background: var(--primary-light);
+        }
+        
+        .code-container {
+            margin-top: 30px;
+            position: relative;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        
+        #generatedCode, #rewardLink {
+            padding: 20px;
+            background: #f8fafc;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            white-space: pre-wrap;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            max-height: 400px;
+            overflow-y: auto;
+            color: #2d3748;
+            tab-size: 2;
+            min-height: 150px;
+        }
+        
+        #rewardLink {
+            font-family: inherit;
+            white-space: nowrap;
+            overflow-x: auto;
+        }
+        
+        .copy-btn {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            z-index: 10;
+        }
+        
+        .copy-btn:hover {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .copy-message {
+            color: var(--success-color);
+            margin-top: 12px;
+            font-size: 14px;
+            text-align: center;
+            display: none;
+            font-weight: 500;
+        }
+        
+        .form-row {
+            display: flex;
+            gap: 20px;
+        }
+        
+        .form-row .form-group {
+            flex: 1;
+        }
+        
+        .note {
+            font-size: 13px;
+            color: var(--text-light);
+            margin-top: 6px;
+            font-style: italic;
+        }
+        
+        .highlight {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+        
+        .section-title {
+            font-size: 18px;
+            font-weight: 600;
+            margin: 30px 0 15px 0;
+            color: var(--primary-color);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .section-title::before {
+            content: "";
+            display: block;
+            width: 4px;
+            height: 18px;
+            background: var(--primary-color);
+            border-radius: 2px;
+        }
+        
+        .info-box {
+            background: var(--primary-light);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border-left: 4px solid var(--primary-color);
+        }
+        
+        .info-box p {
+            margin: 0;
+            font-size: 14px;
+            color: var(--text-color);
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            background: var(--primary-light);
+            color: var(--primary-color);
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-right: 8px;
+        }
+        
+        @media (max-width: 768px) {
+            .form-row {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .time-inputs {
+                flex-direction: column;
+            }
+            
+            .container {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎁 ZaloPay Voucher Code Generator</h1>
+        
+        <div class="info-box">
+            <p><span class="badge">HƯỚNG DẪN</span>Nhập thông tin voucher và thời gian săn, tool sẽ tạo code JavaScript tự động spam request khi đến giờ.</p>
+        </div>
+        
+        <div class="section-title">Chế độ đổi voucher</div>
+        
+        <div class="form-group">
+            <label for="voucherMode">Chọn chế độ</label>
+            <select id="voucherMode">
+                <option value="single" selected>Đổi 1 voucher</option>
+                <option value="multiple">Đổi nhiều voucher</option>
+            </select>
+        </div>
+        
+        <div class="section-title">Thông tin Voucher</div>
+        
+        <div id="singleVoucherInputs">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="rewardStoreId">ID Voucher (rewardStoreId)</label>
+                    <input type="number" id="rewardStoreId" value="4383" placeholder="Nhập ID voucher">
+                    <div class="note">Ví dụ: 4383, 4384,...</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="redeemMethod">Phương thức (redeemMethod)</label>
+                    <select id="redeemMethod">
+                        <option value="POINT" selected>POINT (đổi bằng điểm)</option>
+                        <option value="CLAIM">CLAIM (nhận miễn phí)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="area">Khu vực (area)</label>
+                    <select id="area">
+                        <option value="STORE" selected>STORE (thông thường)</option>
+                        <option value="CLAIM_STORE">CLAIM_STORE (đặc biệt)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div id="multipleVoucherInputs" style="display: none;">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="rewardStoreIds">Các ID Voucher (rewardStoreIds)</label>
+                    <input type="text" id="rewardStoreIds" placeholder="Nhập các ID, cách nhau bằng dấu phẩy (VD: 3801,4094,2954)">
+                    <div class="note">Nhập nhiều ID voucher, ví dụ: 3801,4094,2954</div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="multiRedeemMethod">Phương thức (redeemMethod)</label>
+                    <select id="multiRedeemMethod">
+                        <option value="POINT">POINT (đổi bằng điểm)</option>
+                        <option value="CLAIM" selected>CLAIM (nhận miễn phí)</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="multiArea">Khu vực (area)</label>
+                    <select id="multiArea">
+                        <option value="STORE">STORE (thông thường)</option>
+                        <option value="CLAIM_STORE" selected>CLAIM_STORE (đặc biệt)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        
+        <div class="section-title">Thời gian săn voucher</div>
+        
+        <div class="form-group">
+            <label>Giờ chính xác</label>
+            <div class="time-inputs">
+                <input type="number" id="targetHour" min="0" max="23" value="12" placeholder="Giờ (0-23)">
+                <input type="number" id="targetMin" min="0" max="59" value="0" placeholder="Phút (0-59)">
+                <input type="number" id="targetSec" min="0" max="59" value="0" placeholder="Giây (0-59)">
+            </div>
+        </div>
+        
+        <div class="form-row">
+            <div class="form-group">
+                <label for="syncOffset">Độ trễ đồng bộ (ms)</label>
+                <input type="number" id="syncOffset" value="200" placeholder="Nhập độ trễ">
+                <div class="note">Tool sẽ trừ thời gian này để bù trễ (mặc định 200ms)</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="spamDuration">Thời gian spam (ms)</label>
+                <input type="number" id="spamDuration" value="3000" placeholder="Nhập thời gian spam">
+                <div class="note">Khoảng thời gian tool sẽ tiếp tục gửi request</div>
+            </div>
+        </div>
+        
+        <button id="generateBtn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17 13L12 18L7 13M12 6L12 17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Tạo Code
+        </button>
+        <div class="copy-message" id="copyMessage">Đã copy code vào clipboard!</div>
+        
+        <div class="section-title">Code JavaScript</div>
+        
+        <div class="code-container">
+            <button class="copy-btn" id="manualCopyBtn">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 16H6C4.89543 16 4 15.1046 4 6V6C4 4.89543 4.89543 4 6 4H14C15.1046 4 16 4.89543 16 6V8M10 20H18C19.1046 20 20 19.1046 20 18V10C20 8.89543 19.1046 8 18 8H10C8.89543 8 8 8.89543 8 10V18C8 19.1046 8.89543 20 10 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Copy
+            </button>
+            <div id="generatedCode">
+// Code sẽ hiển thị ở đây sau khi nhấn "Tạo Code"
+// Sau khi copy, dán vào Console (F12 > Console) và nhấn Enter
+            </div>
+        </div>
+        
+    <div class="section-title">Link Truy Cập Đổi Quà</div>
+        
+    <div class="code-container">
+        <button class="copy-btn" id="copyLinkBtn">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M8 16H6C4.89543 16 4 15.1046 4 6V6C4 4.89543 4.89543 4 6 4H14C15.1046 4 16 4.89543 16 6V8M10 20H18C19.1046 20 20 19.1046 20 18V10C20 8.89543 19.1046 8 18 8H10C8.89543 8 8 8.89543 8 10V18C8 19.1046 8.89543 20 10 20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Copy
+        </button>
+        <div id="rewardLink">https://social.zalopay.vn/spa/v2/loyalty/reward</div>
+    </div>
+    
+    <button id="openLinkBtn" class="btn-secondary">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M18 13V19C18 20.1046 17.1046 21 16 21H5C3.89543 21 3 20.1046 3 19V8C3 6.89543 3.89543 6 5 6H11M15 3H21M21 3V9M21 3L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Mở Link Đổi Quà
+    </button>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Các phần khác giữ nguyên
+            
+            // Cập nhật link đổi quà
+            const rewardLink = document.getElementById('rewardLink');
+            const REWARD_LINK = "https://social.zalopay.vn/spa/v2/loyalty/reward";
+            rewardLink.textContent = REWARD_LINK;
+            
+            // Sửa sự kiện click cho nút mở link
+            openLinkBtn.addEventListener('click', function() {
+                const link = rewardLink.textContent.trim();
+                if (link && link.startsWith('http')) {
+                    window.open(link, '_blank', 'noopener,noreferrer');
+                } else {
+                    alert('Link không hợp lệ! Vui lòng kiểm tra lại.');
+                }
+            });
+            
+            generateBtn.addEventListener('click', function() {
+                const mode = voucherMode.value;
+                const targetHour = document.getElementById('targetHour').value;
+                const targetMin = document.getElementById('targetMin').value;
+                const targetSec = document.getElementById('targetSec').value;
+                const syncOffset = document.getElementById('syncOffset').value;
+                const spamDuration = document.getElementById('spamDuration').value;
+                
+                let codeTemplate;
+                
+                if (mode === 'single') {
+                    const rewardStoreId = document.getElementById('rewardStoreId').value;
+                    const redeemMethod = document.getElementById('redeemMethod').value;
+                    const area = document.getElementById('area').value;
+                    
+                    codeTemplate = `(async () => {
+  const body = {
+    rewardStoreId: ${rewardStoreId}, // 🎁 ID voucher bạn muốn đổi
+    redeemMethod: "${redeemMethod}",
+    requester: "loyalty_store",
+    area: "${area}"
+  };
+
+  const headers = {
+    "Content-Type": "application/json",
+    "x-platform": "ZPI",
+    "x-device-os": "IOS",
+    "x-app-version": "ZaloPayApp",
+    "Accept": "application/json, text/plain, */*"
+  };
+
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const randomDelay = () => Math.floor(Math.random() * 30) + 50; // 50–80ms
+
+  // ⏰ Giờ săn chính xác
+  const TARGET_HOUR = ${targetHour};
+  const TARGET_MIN = ${targetMin};
+  const TARGET_SEC = ${targetSec};
+  const TARGET_MS = 0;
+
+  // 🕰️ Điều chỉnh đồng bộ thời gian
+  const syncOffset = ${syncOffset}; // Độ trễ cần bù (ms)
+
+  const fireTime = new Date();
+  fireTime.setHours(TARGET_HOUR, TARGET_MIN, TARGET_SEC, TARGET_MS - syncOffset);
+  const spamEndTime = new Date(fireTime.getTime() + ${spamDuration}); // spam ${spamDuration}ms
+
+  const now = new Date();
+  if (now < fireTime) {
+    console.log(\`⏳ Chờ đến \${fireTime.toLocaleTimeString('vi-VN', { hour12: false })}...\`);
+    await delay(fireTime - now);
+  }
+
+  let attempt = 0;
+  let success = false;
+
+  console.log("🚀 Bắt đầu spam request...");
+
+  while (new Date() < spamEndTime && !success) {
+    attempt++;
+    try {
+      const res = await fetch("https://loyalty.zalopay.vn/gateway/v1/redeempoint", {
+        method: "POST",
+        headers,
+        body: JSON.stringify(body),
+        credentials: "include"
+      });
+
+      const data = await res.json();
+      console.log(\`🔁 Lần \${attempt}:\`, data);
+
+      if (data.returnCode === 1) {
+        alert("🎉 ĐỔI QUÀ THÀNH CÔNG!");
+        success = true;
+        break;
+      }
+    } catch (err) {
+      console.error("🚫 Lỗi request:", err);
+    }
+
+    await delay(randomDelay());
+  }
+
+  if (!success) {
+    alert("❌ Không đổi được quà sau khi thử liên tục.");
+  }
+})();`;
+                } else {
+                    const rewardStoreIds = document.getElementById('rewardStoreIds').value
+                        .split(',')
+                        .map(id => id.trim())
+                        .filter(id => id !== '')
+                        .map(id => parseInt(id))
+                        .filter(id => !isNaN(id));
+                    const redeemMethod = document.getElementById('multiRedeemMethod').value;
+                    const area = document.getElementById('multiArea').value;
+                    
+                    if (rewardStoreIds.length === 0) {
+                        alert("Vui lòng nhập ít nhất một ID voucher hợp lệ!");
+                        return;
+                    }
+                    
+                    codeTemplate = `(async () => {
+  const rewardIds = [${rewardStoreIds.join(', ')}]; // 🎁 Các ID voucher bạn muốn đổi
+
+  const headers = {
+    "Content-Type": "application/json",
+    "x-platform": "ZPI",
+    "x-device-os": "IOS",
+    "x-app-version": "ZaloPayApp",
+    "Accept": "application/json, text/plain, */*"
+  };
+
+  const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const randomDelay = () => Math.floor(Math.random() * 30) + 50;
+
+  const TARGET_HOUR = ${targetHour}, TARGET_MIN = ${targetMin}, TARGET_SEC = ${targetSec}, TARGET_MS = 0;
+  const syncOffset = ${syncOffset}; // Bạn có thể chỉnh nếu đồng hồ lệch
+
+  const fireTime = new Date();
+  fireTime.setHours(TARGET_HOUR, TARGET_MIN, TARGET_SEC, TARGET_MS - syncOffset);
+  const spamEndTime = new Date(fireTime.getTime() + ${spamDuration});
+
+  const now = new Date();
+  if (now < fireTime) {
+    console.log(\`⏳ Chờ đến \${fireTime.toLocaleTimeString('vi-VN', { hour12: false })}...\`);
+    await delay(fireTime - now);
+  }
+
+  console.log("🚀 Bắt đầu spam đổi ${rewardStoreIds.length} voucher...");
+
+  let success = false;
+
+  while (new Date() < spamEndTime && !success) {
+    await Promise.all(
+      rewardIds.map(async (id) => {
+        const body = {
+          rewardStoreId: id,
+          redeemMethod: "${redeemMethod}",
+          requester: "Promotion_Hub_Zone_3",
+          area: "${area}"
+        };
+
+        try {
+          const res = await fetch("https://loyalty.zalopay.vn/gateway/v1/redeempoint", {
+            method: "POST",
+            headers,
+            body: JSON.stringify(body),
+            credentials: "include"
+          });
+
+          const data = await res.json();
+          console.log(\`🎯 Voucher \${id}:\`, data);
+
+          if (data.returnCode === 1) {
+            alert(\`🎉 ĐỔI QUÀ THÀNH CÔNG: Voucher \${id}\`);
+            success = true;
+          }
+        } catch (err) {
+          console.error(\`🚫 Lỗi khi đổi voucher \${id}:\`, err);
+        }
+      })
+    );
+
+    await delay(randomDelay());
+  }
+
+  if (!success) {
+    alert("❌ Không đổi được quà sau nhiều lần thử.");
+  }
+})();`;
+                }
+                
+                const codeElement = document.getElementById('generatedCode');
+                codeElement.textContent = codeTemplate;
+                
+                // Auto copy to clipboard
+                copyToClipboard(codeTemplate);
+            });
+
+            manualCopyBtn.addEventListener('click', function() {
+                const code = document.getElementById('generatedCode').textContent;
+                copyToClipboard(code);
+            });
+
+            copyLinkBtn.addEventListener('click', function() {
+                const link = rewardLink.textContent;
+                copyToClipboard(link);
+            });
+
+            openLinkBtn.addEventListener('click', function() {
+                let link = rewardLink.textContent.trim();
+                console.log('Attempting to open link:', link);
+
+                // Ensure link starts with http or https
+                if (!link.startsWith('http://') && !link.startsWith('https://')) {
+                    link = 'https://' + link;
+                    console.warn('Link missing protocol, defaulting to https:', link);
+                }
+
+                try {
+                    // Primary method: window.open
+                    const newWindow = window.open(link, '_blank');
+                    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+                        throw new Error('Window.open failed, possibly blocked by popup blocker');
+                    }
+                    console.log('Link opened successfully using window.open');
+                } catch (error) {
+                    console.error('Error opening link with window.open:', error.message);
+                    // Fallback: create an <a> element and simulate click
+                    const a = document.createElement('a');
+                    a.href = link;
+                    a.target = '_blank';
+                    a.rel = 'noopener noreferrer';
+                    document.body.appendChild(a);
+                    a.click();
+                    document.body.removeChild(a);
+                    console.log('Link opened using fallback <a> element');
+                }
+            });
+
+            function copyToClipboard(text) {
+                navigator.clipboard.writeText(text).then(() => {
+                    copyMessage.style.display = 'block';
+                    setTimeout(() => {
+                        copyMessage.style.display = 'none';
+                    }, 2000);
+                }).catch(err => {
+                    console.error('Lỗi khi copy:', err);
+                    // Fallback cho trình duyệt cũ
+                    const textarea = document.createElement('textarea');
+                    textarea.value = text;
+                    document.body.appendChild(textarea);
+                    textarea.select();
+                    try {
+                        document.execCommand('copy');
+                        copyMessage.style.display = 'block';
+                        setTimeout(() => {
+                            copyMessage.style.display = 'none';
+                        }, 2000);
+                    } catch (err) {
+                        alert('Không thể copy tự động, vui lòng copy thủ công');
+                    }
+                    document.body.removeChild(textarea);
+                });
+            }
+        });
+    </script>
+</body>
+</html>
